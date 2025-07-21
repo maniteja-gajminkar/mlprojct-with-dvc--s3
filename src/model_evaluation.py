@@ -1,8 +1,15 @@
 import os
 import logging
 import pickle
+import json
 import pandas as pd
-from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import (
+    classification_report,
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+)
 
 # Base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,11 +22,13 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+
 def load_model(model_path):
     with open(model_path, "rb") as f:
         model = pickle.load(f)
     logger.debug(f"Model loaded from {model_path}")
     return model
+
 
 def load_vectorizer(vectorizer_path):
     with open(vectorizer_path, "rb") as f:
@@ -27,10 +36,12 @@ def load_vectorizer(vectorizer_path):
     logger.debug(f"Vectorizer loaded from {vectorizer_path}")
     return vectorizer
 
+
 def load_test_data(file_path):
     df = pd.read_csv(file_path)
     logger.debug(f"Test data loaded from {file_path}")
     return df
+
 
 def evaluate_model(model, vectorizer, df):
     X_test = df["text"].fillna("")
@@ -52,21 +63,38 @@ def evaluate_model(model, vectorizer, df):
     print("Classification Report:")
     print(classification_report(y_test, y_pred, zero_division=0))
 
+    return accuracy, precision, recall, f1  # Return metrics for writing
+
+
 def main():
     try:
         model_path = os.path.join(BASE_DIR, "artifacts", "models", "model.pkl")
         vectorizer_path = os.path.join(BASE_DIR, "artifacts", "transformers", "tfidf_vectorizer.pkl")
-        test_data_path = os.path.join(BASE_DIR, "data", "interim", "test_processed.csv")  # Change to your test set path
+        test_data_path = os.path.join(BASE_DIR, "data", "interim", "test_processed.csv")
 
         model = load_model(model_path)
         vectorizer = load_vectorizer(vectorizer_path)
         df_test = load_test_data(test_data_path)
 
-        evaluate_model(model, vectorizer, df_test)
+        accuracy, precision, recall, f1 = evaluate_model(model, vectorizer, df_test)
+
+        # ✅ Write metrics.json for DVC
+        metrics = {
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+        }
+
+        with open("metrics.json", "w") as f:
+            json.dump(metrics, f, indent=4)
+
+        logger.info("metrics.json file created.")
 
     except Exception as e:
         logger.error(f"Model evaluation failed: {e}")
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     main()
