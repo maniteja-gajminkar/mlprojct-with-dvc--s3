@@ -5,5 +5,5 @@ feature_engineering:
   max_features: 3000
 
 model_training:
-  n_estimators: 100
+  n_estimators: 150
   random_state: 42

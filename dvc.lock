@@ -41,7 +41,7 @@ stages:
       size: 254230
     - path: params.yaml
       hash: md5
-      md5: 829abb1f4b1418f4631ed12fac0ad6b1
+      md5: b4a9702990bc8c7b83b9eb2ba8f25515
       size: 141
     - path: src/feature_engineering.py
       hash: md5
@@ -50,7 +50,7 @@ stages:
     outs:
     - path: artifacts/transformers/tfidf_vectorizer.pkl
       hash: md5
-      md5: 367cc59b9cd2183e9e045fe818b2514d
+      md5: e15fe554703fcd5d8da31b4b61efa931
       size: 93871
     - path: data/interim/test_processed.csv
       hash: md5
@@ -73,7 +73,7 @@ stages:
     deps:
     - path: artifacts/transformers/tfidf_vectorizer.pkl
       hash: md5
-      md5: 367cc59b9cd2183e9e045fe818b2514d
+      md5: e15fe554703fcd5d8da31b4b61efa931
       size: 93871
     - path: data/interim/train_processed.csv
       hash: md5
@@ -86,18 +86,18 @@ stages:
     outs:
     - path: artifacts/models/model.pkl
       hash: md5
-      md5: dcbaa46abf615b604e5bc9220ab3e61c
-      size: 213523
+      md5: cbbf51e94a13b937c35f9f3499b37f32
+      size: 7601930
   evaluate:
     cmd: python src/model_evaluation.py
     deps:
     - path: artifacts/models/model.pkl
       hash: md5
-      md5: dcbaa46abf615b604e5bc9220ab3e61c
-      size: 213523
+      md5: cbbf51e94a13b937c35f9f3499b37f32
+      size: 7601930
     - path: artifacts/transformers/tfidf_vectorizer.pkl
       hash: md5
-      md5: 367cc59b9cd2183e9e045fe818b2514d
+      md5: e15fe554703fcd5d8da31b4b61efa931
       size: 93871
     - path: data/interim/test_processed.csv
       hash: md5
@@ -105,5 +105,5 @@ stages:
       size: 51537
     - path: src/model_evaluation.py
       hash: md5
-      md5: d76eab5de37b4c1917902dceeb9d4584
-      size: 2967
+      md5: f999fa84d7cef004a7586a3c4562d4a9
+      size: 2485
