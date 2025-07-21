@@ -1,0 +1,109 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: experiments/spam.csv
+      hash: md5
+      md5: 6c4b246b0dc11ae3e2da633b0e57b0dd
+      size: 504895
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: 1827ccbb0daabd49d985a562cc59a670
+      size: 2818
+    outs:
+    - path: data/raw/spam_raw.csv
+      hash: md5
+      md5: 40904d3d4a5a76113fe0c0f6eb81c821
+      size: 484835
+  preprocess:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw/spam_raw.csv
+      hash: md5
+      md5: 40904d3d4a5a76113fe0c0f6eb81c821
+      size: 484835
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: 13f9487cc38a26c8a9a2dcb8b15229cd
+      size: 3246
+    outs:
+    - path: data/processed/spam_clean.csv
+      hash: md5
+      md5: 98c5179b6e36d4c9e71a5b2426b855ca
+      size: 254230
+  featurize:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/processed/spam_clean.csv
+      hash: md5
+      md5: 98c5179b6e36d4c9e71a5b2426b855ca
+      size: 254230
+    - path: params.yaml
+      hash: md5
+      md5: 20c8fdc05ef51a4156c2d92a875fd0ee
+      size: 41
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: e600dc57be4f0d612f10418cc4eed8ac
+      size: 3938
+    outs:
+    - path: artifacts/transformers/tfidf_vectorizer.pkl
+      hash: md5
+      md5: f8923d47c18ba097f97a2fa145376fd3
+      size: 9844
+    - path: data/interim/test_processed.csv
+      hash: md5
+      md5: 550a4f021fe582500ae7e0483b123f12
+      size: 51537
+    - path: data/interim/train_processed.csv
+      hash: md5
+      md5: 23187f86a232381fc60d4854dc4740d0
+      size: 202706
+    - path: data/processed/test_tfidf.csv
+      hash: md5
+      md5: 66d04ef41a2b77a3e9ee84be7440afbd
+      size: 1306030
+    - path: data/processed/train_tfidf.csv
+      hash: md5
+      md5: f3cccea7a8cc0a9fb54cf40f06e3c325
+      size: 5219738
+  train:
+    cmd: python src/model_training.py
+    deps:
+    - path: artifacts/transformers/tfidf_vectorizer.pkl
+      hash: md5
+      md5: f8923d47c18ba097f97a2fa145376fd3
+      size: 9844
+    - path: data/interim/train_processed.csv
+      hash: md5
+      md5: 23187f86a232381fc60d4854dc4740d0
+      size: 202706
+    - path: src/model_training.py
+      hash: md5
+      md5: 767659f17073212a56c9ae4c9d3d834c
+      size: 3904
+    outs:
+    - path: artifacts/models/model.pkl
+      hash: md5
+      md5: 31878fe0dbc1f30eb77143b6131773f3
+      size: 6256388
+  evaluate:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: artifacts/models/model.pkl
+      hash: md5
+      md5: 31878fe0dbc1f30eb77143b6131773f3
+      size: 6256388
+    - path: artifacts/transformers/tfidf_vectorizer.pkl
+      hash: md5
+      md5: f8923d47c18ba097f97a2fa145376fd3
+      size: 9844
+    - path: data/interim/test_processed.csv
+      hash: md5
+      md5: 550a4f021fe582500ae7e0483b123f12
+      size: 51537
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: f999fa84d7cef004a7586a3c4562d4a9
+      size: 2485

@@ -1,0 +1,42 @@
+stages:
+  train:
+    cmd: python src/model_training.py
+    deps:
+    - artifacts/transformers/tfidf_vectorizer.pkl
+    - data/interim/train_processed.csv
+    - src/model_training.py
+    outs:
+    - artifacts/models/model.pkl
+  evaluate:
+    cmd: python src/model_evaluation.py
+    deps:
+    - artifacts/models/model.pkl
+    - artifacts/transformers/tfidf_vectorizer.pkl
+    - data/interim/test_processed.csv
+    - src/model_evaluation.py
+  preprocess:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - data/raw/spam_raw.csv
+    - src/data_preprocessing.py
+    outs:
+    - data/processed/spam_clean.csv
+  featurize:
+    cmd: python src/feature_engineering.py
+    deps:
+    - data/processed/spam_clean.csv
+    - params.yaml
+    - src/feature_engineering.py
+    outs:
+    - artifacts/transformers/tfidf_vectorizer.pkl
+    - data/interim/test_processed.csv
+    - data/interim/train_processed.csv
+    - data/processed/test_tfidf.csv
+    - data/processed/train_tfidf.csv
+  ingest:
+    cmd: python src/data_ingestion.py
+    deps:
+    - experiments/spam.csv
+    - src/data_ingestion.py
+    outs:
+    - data/raw/spam_raw.csv
